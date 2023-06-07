@@ -7,6 +7,6 @@ type Cart struct {
 	PaymentSystem string
 	Number        string
 	Holder        string
-	CVC           int
 	EndData       time.Time
+	CVC           int
 }
