@@ -1,19 +1,15 @@
 package main
 
 import (
-	"image/color"
 	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
-
-const HEIGHT float32 = 30
 
 var user = "user"
 var password = "password"
@@ -115,35 +111,11 @@ func main() {
 		window.Show()
 	})
 	//---------------------------------------------------------------------- tbl - текстовые данные
-	//dataTblText := [][]fyne.CanvasObject{
-	//	{widget.NewLabel("NAME"), widget.NewLabel("DATA"), widget.NewLabel("DESCRIPTION"), widget.NewLabel("CREATED_AT"), widget.NewLabel("UPDATED_AT")},
-	//	{widget.NewLabel("name_1"), widget.NewLabel("text"), widget.NewLabel("text"), widget.NewLabel("01-01-2023 08:30"), widget.NewLabel("01-01-2023 10:30")},
-	//	{widget.NewLabel("name_2"), widget.NewLabel("text"), widget.NewLabel("text"), widget.NewLabel("01-01-2023 08:30"), widget.NewLabel("01-01-2023 10:30")},
-	//	{widget.NewLabel("name_N"), widget.NewLabel("text"), widget.NewLabel("text"), widget.NewLabel("01-01-2023 08:30"), widget.NewLabel("01-01-2023 10:30")},
-	//}
 	dataTblText := [][]string{
-		[]string{"top left", "top right"},
-		[]string{"bottom left", "bottom right"}}
-
-	//tableData := widget.NewTable(
-	//	func() (int, int) {
-	//		return len(dataTblText), len(dataTblText[0])
-	//	},
-	//	func() fyne.CanvasObject {
-	//		c := container.NewWithoutLayout()
-	//		r := canvas.NewRectangle(color.White)
-	//		r.SetMinSize(fyne.NewSize(0, HEIGHT))
-	//		r.Resize(fyne.NewSize(0, HEIGHT))
-	//		c.Add(r)
-	//		return c
-	//	},
-	//	func(cell widget.TableCellID, o fyne.CanvasObject) {
-	//		container := o.(*fyne.Container)
-	//		var obj = dataTblText[cell.Row][cell.Col]
-	//		container.Add(obj)
-	//		container.Refresh()
-	//	})
-	//setDefaultColumnsWidthText(tableData)
+		{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"},
+		{"name_1", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_2", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_N", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"}}
 
 	tableData := widget.NewTable(
 		func() (int, int) {
@@ -155,35 +127,28 @@ func main() {
 		func(i widget.TableCellID, o fyne.CanvasObject) {
 			o.(*widget.Label).SetText(dataTblText[i.Row][i.Col])
 		})
+	setDefaultColumnsWidthText(tableData)
 
 	containerTblText := layout.NewBorderLayout(buttonTop, buttonText, nil, nil)
 	boxText := fyne.NewContainerWithLayout(containerTblText, buttonTop, tableData, buttonText)
 	//---------------------------------------------------------------------- tbl - банковские карты
-	dataTblCart := [][]fyne.CanvasObject{
-		{widget.NewLabel("NAME"), widget.NewLabel("PAYMENT SYSTEM"), widget.NewLabel("NUMBER"), widget.NewLabel("HOLDER"), widget.NewLabel("CVC"), widget.NewLabel("END DATE"), widget.NewLabel("CREATED_AT"), widget.NewLabel("UPDATED_AT")},
-		{widget.NewLabel("name_1"), widget.NewLabel("Visa"), widget.NewLabel("1234567890"), widget.NewLabel("Artur"), widget.NewLabel("123"), widget.NewLabel("01-01-2023 10:30"), widget.NewLabel("01-01-2023 08:30"), widget.NewLabel("01-01-2023 10:30")},
-		{widget.NewLabel("name_2"), widget.NewLabel("Master cart"), widget.NewLabel("1234567890"), widget.NewLabel("Ura"), widget.NewLabel("123"), widget.NewLabel("01-01-2023 10:30"), widget.NewLabel("01-01-2023 08:30"), widget.NewLabel("01-01-2023 10:30")},
-		{widget.NewLabel("name_N"), widget.NewLabel("Visa"), widget.NewLabel("1234567890"), widget.NewLabel("Pety"), widget.NewLabel("123"), widget.NewLabel("01-01-2023 10:30"), widget.NewLabel("01-01-2023 08:30"), widget.NewLabel("01-01-2023 10:30")},
-	}
+	dataTblCart := [][]string{
+		{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"},
+		{"name_1", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_2", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_N", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"}}
 
 	tableDataCart := widget.NewTable(
 		func() (int, int) {
 			return len(dataTblCart), len(dataTblCart[0])
 		},
 		func() fyne.CanvasObject {
-			c := container.NewWithoutLayout()
-			r := canvas.NewRectangle(color.White)
-			r.SetMinSize(fyne.NewSize(0, HEIGHT))
-			r.Resize(fyne.NewSize(0, HEIGHT))
-			c.Add(r)
-			return c
+			return widget.NewLabel("wide content")
 		},
-		func(cell widget.TableCellID, o fyne.CanvasObject) {
-			container := o.(*fyne.Container)
-			var obj = dataTblCart[cell.Row][cell.Col]
-			container.Add(obj)
-			container.Refresh()
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			o.(*widget.Label).SetText(dataTblCart[i.Row][i.Col])
 		})
+
 	setDefaultColumnsWidthCart(tableDataCart)
 
 	containerTblCart := layout.NewBorderLayout(buttonTop, buttonCart, nil, nil)
