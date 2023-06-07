@@ -7,28 +7,28 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/vasiliyantufev/gui/internal/components"
 	"github.com/vasiliyantufev/gui/internal/models"
 )
 
 var user = "user"
 var password = "password"
 
-func setDefaultColumnsWidthText(table *widget.Table) {
-	colWidths := []float32{150, 500, 150, 150, 150}
-	for idx, colWidth := range colWidths {
-		table.SetColumnWidth(idx, colWidth)
-	}
-}
-
-func setDefaultColumnsWidthCart(table *widget.Table) {
-	colWidths := []float32{150, 150, 150, 150, 50, 150, 150, 150, 150}
-	for idx, colWidth := range colWidths {
-		table.SetColumnWidth(idx, colWidth)
-	}
-}
+//func setDefaultColumnsWidthText(table *widget.Table) {
+//	colWidths := []float32{150, 500, 150, 150, 150}
+//	for idx, colWidth := range colWidths {
+//		table.SetColumnWidth(idx, colWidth)
+//	}
+//}
+//
+//func setDefaultColumnsWidthCart(table *widget.Table) {
+//	colWidths := []float32{150, 150, 150, 150, 50, 150, 150, 150, 150}
+//	for idx, colWidth := range colWidths {
+//		table.SetColumnWidth(idx, colWidth)
+//	}
+//}
 
 func main() {
 
@@ -43,14 +43,14 @@ func main() {
 	application := app.New()
 	application.Settings().SetTheme(theme.LightTheme())
 
-	window := application.NewWindow("Auth")
+	window := application.NewWindow("GophKeeper")
 	window.Resize(fyne.NewSize(250, 80))
 
-	var contentA *fyne.Container
-	var contentB *fyne.Container
-	var contentC *fyne.Container
-	var contentD *fyne.Container
-	var contentE *fyne.Container
+	var containerRadio *fyne.Container
+	var containerFormLogin *fyne.Container
+	var containerFormRegistration *fyne.Container
+	var containerFormText *fyne.Container
+	var containerFormCart *fyne.Container
 
 	separator := widget.NewSeparator()
 
@@ -99,12 +99,12 @@ func main() {
 	radio := widget.NewRadioGroup(options, func(value string) {
 		log.Println("Radio set to ", value)
 		if value == "Login" {
-			window.SetContent(contentB)
+			window.SetContent(containerFormLogin)
 			window.Resize(fyne.NewSize(500, 100))
 			window.Show()
 		}
 		if value == "Registration" {
-			window.SetContent(contentC)
+			window.SetContent(containerFormRegistration)
 			window.Resize(fyne.NewSize(500, 100))
 			window.Show()
 		}
@@ -113,75 +113,29 @@ func main() {
 	buttonTop := widget.NewButton("Обновить данные", func() {
 	})
 	buttonText := widget.NewButton("Добавить текстовые данные", func() {
-		window.SetContent(contentD)
+		window.SetContent(containerFormText)
 		window.Show()
 	})
 	buttonCart := widget.NewButton("Добавить банковскую карту", func() {
-		window.SetContent(contentE)
+		window.SetContent(containerFormCart)
 		window.Show()
 	})
-	//---------------------------------------------------------------------- tbl - текстовые данные
-	dataTblText := [][]string{
-		{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"},
-		{"name_1", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_2", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_N", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"}}
 
-	tableData := widget.NewTable(
-		func() (int, int) {
-			return len(dataTblText), len(dataTblText[0])
-		},
-		func() fyne.CanvasObject {
-			return widget.NewLabel("wide content")
-		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(dataTblText[i.Row][i.Col])
-		})
-	setDefaultColumnsWidthText(tableData)
+	containerTabs := components.GetTabs(window, buttonTop, buttonText, buttonCart)
 
-	containerTblText := layout.NewBorderLayout(buttonTop, buttonText, nil, nil)
-	boxText := fyne.NewContainerWithLayout(containerTblText, buttonTop, tableData, buttonText)
-	//---------------------------------------------------------------------- tbl - банковские карты
-	dataTblCart := [][]string{
-		{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"},
-		{"name_1", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_2", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_N", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"}}
-
-	tableDataCart := widget.NewTable(
-		func() (int, int) {
-			return len(dataTblCart), len(dataTblCart[0])
-		},
-		func() fyne.CanvasObject {
-			return widget.NewLabel("wide content")
-		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(dataTblCart[i.Row][i.Col])
-		})
-
-	setDefaultColumnsWidthCart(tableDataCart)
-
-	containerTblCart := layout.NewBorderLayout(buttonTop, buttonCart, nil, nil)
-	boxCart := fyne.NewContainerWithLayout(containerTblCart, buttonTop, tableDataCart, buttonCart)
-	//---------------------------------------------------------------------- cabinet
-	labelFile := widget.NewLabel("Список файлов")
-	tab1 := container.NewTabItem("Текстовые данные", boxText)
-	tab2 := container.NewTabItem("Банковские карты", boxCart)
-	tab3 := container.NewTabItem("Файлы", labelFile)
-	tabs := container.NewAppTabs(tab1, tab2, tab3)
 	//----------------------------------------------------------------------
 	button := widget.NewButton("Submit", func() {
 		log.Println("Submit")
 		if radio.Selected == "Login" {
 			if UsernameLogin.Text == user && PasswordLogin.Text == password {
-				window.SetContent(tabs)
+				window.SetContent(containerTabs)
 				window.Resize(fyne.NewSize(1250, 300))
 				window.Show()
 			}
 		}
 		if radio.Selected == "Registration" {
 			if UsernameRegistration.Text == user && PasswordRegistration.Text == password && NewPasswordEntryRegistration.Text == password {
-				window.SetContent(tabs)
+				window.SetContent(containerTabs)
 				window.Resize(fyne.NewSize(1250, 300))
 				window.Show()
 			}
@@ -189,20 +143,20 @@ func main() {
 	})
 
 	buttonTextAdd := widget.NewButton("Добавить", func() {
-		window.SetContent(tabs)
+		window.SetContent(containerTabs)
 		window.Show()
 	})
 	buttonCartAdd := widget.NewButton("Добавить", func() {
-		window.SetContent(tabs)
+		window.SetContent(containerTabs)
 		window.Show()
 	})
 
-	contentA = container.NewVBox(radio)
-	contentB = container.NewVBox(formLogin, button, separator, radio)
-	contentC = container.NewVBox(formRegistration, button, separator, radio)
-	contentD = container.NewVBox(formText, buttonTextAdd)
-	contentE = container.NewVBox(formCart, buttonCartAdd)
+	containerRadio = container.NewVBox(radio)
+	containerFormLogin = container.NewVBox(formLogin, button, separator, radio)
+	containerFormRegistration = container.NewVBox(formRegistration, button, separator, radio)
+	containerFormText = container.NewVBox(formText, buttonTextAdd)
+	containerFormCart = container.NewVBox(formCart, buttonCartAdd)
 
-	window.SetContent(contentA)
+	window.SetContent(containerRadio)
 	window.ShowAndRun()
 }
