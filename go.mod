@@ -1,4 +1,4 @@
-module gui
+module github.com/vasiliyantufev/gui
 
 go 1.19
 
