@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -10,6 +12,26 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
+
+type User struct {
+	name     string
+	password string
+}
+
+type Text struct {
+	name        string
+	description string
+	text        string
+}
+
+type Cart struct {
+	name          string
+	paymentSystem string
+	number        string
+	holder        string
+	cvc           int
+	endData       time.Time
+}
 
 var user = "user"
 var password = "password"
@@ -29,8 +51,16 @@ func setDefaultColumnsWidthCart(table *widget.Table) {
 }
 
 func main() {
-	application := app.New()
 
+	users := make(map[string]User)
+	texts := make(map[string]Text)
+	carts := make(map[string]Cart)
+
+	fmt.Print(users)
+	fmt.Print(texts)
+	fmt.Print(carts)
+
+	application := app.New()
 	application.Settings().SetTheme(theme.LightTheme())
 
 	window := application.NewWindow("Auth")
