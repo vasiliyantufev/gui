@@ -16,20 +16,6 @@ import (
 var user = "user"
 var password = "password"
 
-//func setDefaultColumnsWidthText(table *widget.Table) {
-//	colWidths := []float32{150, 500, 150, 150, 150}
-//	for idx, colWidth := range colWidths {
-//		table.SetColumnWidth(idx, colWidth)
-//	}
-//}
-//
-//func setDefaultColumnsWidthCart(table *widget.Table) {
-//	colWidths := []float32{150, 150, 150, 150, 50, 150, 150, 150, 150}
-//	for idx, colWidth := range colWidths {
-//		table.SetColumnWidth(idx, colWidth)
-//	}
-//}
-
 func main() {
 
 	users := make(map[string]models.User)
@@ -55,45 +41,10 @@ func main() {
 	separator := widget.NewSeparator()
 
 	//----------------------------------------------------------------------
-	UsernameRegistration := widget.NewEntry()
-	PasswordRegistration := widget.NewPasswordEntry()
-	NewPasswordEntryRegistration := widget.NewPasswordEntry()
-	formRegistration := widget.NewForm(
-		widget.NewFormItem("Username", UsernameRegistration),
-		widget.NewFormItem("Password", PasswordRegistration),
-		widget.NewFormItem("Confirm password", NewPasswordEntryRegistration),
-	)
-	//----------------------------------------------------------------------
-	UsernameLogin := widget.NewEntry()
-	PasswordLogin := widget.NewPasswordEntry()
-	formLogin := widget.NewForm(
-		widget.NewFormItem("Username", UsernameLogin),
-		widget.NewFormItem("Password", PasswordLogin),
-	)
-	//----------------------------------------------------------------------
-	TextName := widget.NewEntry()
-	Text := widget.NewEntry()
-	TextDescription := widget.NewEntry()
-	formText := widget.NewForm(
-		widget.NewFormItem("Name", TextName),
-		widget.NewFormItem("Text", Text),
-		widget.NewFormItem("Description", TextDescription),
-	)
-	//----------------------------------------------------------------------
-	CartName := widget.NewEntry()
-	PaymentSystem := widget.NewEntry()
-	Number := widget.NewEntry()
-	Holder := widget.NewEntry()
-	EndDate := widget.NewEntry()
-	CVC := widget.NewEntry()
-	formCart := widget.NewForm(
-		widget.NewFormItem("Name", CartName),
-		widget.NewFormItem("Payment system", PaymentSystem),
-		widget.NewFormItem("Number", Number),
-		widget.NewFormItem("Holder", Holder),
-		widget.NewFormItem("End date", EndDate),
-		widget.NewFormItem("CVC", CVC),
-	)
+	formLogin, UsernameLogin, PasswordLogin := components.GetFormLogin()
+	formRegistration, UsernameRegistration, PasswordRegistration, NewPasswordEntryRegistration := components.GetFormRegistration()
+	formText := components.GetFormText()
+	formCart := components.GetFormCart()
 	//----------------------------------------------------------------------
 	options := []string{"Login", "Registration"}
 	radio := widget.NewRadioGroup(options, func(value string) {

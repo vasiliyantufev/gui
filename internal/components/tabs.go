@@ -23,16 +23,6 @@ func setDefaultColumnsWidthCart(table *widget.Table) {
 
 func GetTabs(window fyne.Window, top *widget.Button, text *widget.Button, cart *widget.Button) *container.AppTabs {
 
-	//buttonTop := widget.NewButton("Обновить данные", func() {
-	//})
-	//buttonText := widget.NewButton("Добавить текстовые данные", func() {
-	//	window.SetContent(containerFormText)
-	//	window.Show()
-	//})
-	//buttonCart := widget.NewButton("Добавить банковскую карту", func() {
-	//	window.SetContent(containerFormCart)
-	//	window.Show()
-	//})
 	//---------------------------------------------------------------------- tbl - текстовые данные
 	dataTblText := [][]string{
 		{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"},
