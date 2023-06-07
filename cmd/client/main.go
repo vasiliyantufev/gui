@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"fyne.io/fyne/v2"
@@ -9,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/vasiliyantufev/gui/internal/models"
 )
 
 var user = "user"
@@ -30,13 +32,13 @@ func setDefaultColumnsWidthCart(table *widget.Table) {
 
 func main() {
 
-	//users := make(map[string]User)
-	//texts := make(map[string]Text)
-	//carts := make(map[string]Cart)
-	//
-	//fmt.Print(users)
-	//fmt.Print(texts)
-	//fmt.Print(carts)
+	users := make(map[string]models.User)
+	texts := make(map[string]models.Text)
+	carts := make(map[string]models.Cart)
+
+	fmt.Print(users)
+	fmt.Print(texts)
+	fmt.Print(carts)
 
 	application := app.New()
 	application.Settings().SetTheme(theme.LightTheme())
