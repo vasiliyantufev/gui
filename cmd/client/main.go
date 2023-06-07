@@ -9,8 +9,8 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/vasiliyantufev/gui/internal/components"
-	"github.com/vasiliyantufev/gui/internal/models"
+	"github.com/vasiliyantufev/gui/internal/component"
+	"github.com/vasiliyantufev/gui/internal/model"
 )
 
 var user = "user"
@@ -18,9 +18,9 @@ var password = "password"
 
 func main() {
 
-	users := make(map[string]models.User)
-	texts := make(map[string]models.Text)
-	carts := make(map[string]models.Cart)
+	users := make(map[string]model.User)
+	texts := make(map[string]model.Text)
+	carts := make(map[string]model.Cart)
 
 	fmt.Print(users)
 	fmt.Print(texts)
@@ -41,10 +41,10 @@ func main() {
 	separator := widget.NewSeparator()
 
 	//----------------------------------------------------------------------
-	formLogin, UsernameLogin, PasswordLogin := components.GetFormLogin()
-	formRegistration, UsernameRegistration, PasswordRegistration, NewPasswordEntryRegistration := components.GetFormRegistration()
-	formText := components.GetFormText()
-	formCart := components.GetFormCart()
+	formLogin, UsernameLogin, PasswordLogin := component.GetFormLogin()
+	formRegistration, UsernameRegistration, PasswordRegistration, NewPasswordEntryRegistration := component.GetFormRegistration()
+	formText := component.GetFormText()
+	formCart := component.GetFormCart()
 	//----------------------------------------------------------------------
 	options := []string{"Login", "Registration"}
 	radio := widget.NewRadioGroup(options, func(value string) {
@@ -72,8 +72,10 @@ func main() {
 		window.Show()
 	})
 
-	containerTabs := components.GetTabs(window, buttonTop, buttonText, buttonCart)
-
+	tabText := component.GetTabTexts(buttonTop, buttonText)
+	tabCart := component.GetTabCarts(buttonTop, buttonCart)
+	tabFile := component.GetTabFiles()
+	containerTabs := container.NewAppTabs(tabText, tabCart, tabFile)
 	//----------------------------------------------------------------------
 	button := widget.NewButton("Submit", func() {
 		log.Println("Submit")

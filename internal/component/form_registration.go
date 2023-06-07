@@ -1,4 +1,4 @@
-package components
+package component
 
 import "fyne.io/fyne/v2/widget"
 
