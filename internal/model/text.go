@@ -1,7 +1,7 @@
 package model
 
 type Text struct {
-	name        string
-	description string
-	text        string
+	Name        string
+	Description string
+	Text        string
 }

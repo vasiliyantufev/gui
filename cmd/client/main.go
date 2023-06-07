@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"unicode/utf8"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -12,9 +13,6 @@ import (
 	"github.com/vasiliyantufev/gui/internal/component"
 	"github.com/vasiliyantufev/gui/internal/model"
 )
-
-var user = "user"
-var password = "password"
 
 func main() {
 
@@ -38,11 +36,16 @@ func main() {
 	var containerFormText *fyne.Container
 	var containerFormCart *fyne.Container
 
-	separator := widget.NewSeparator()
-
 	//----------------------------------------------------------------------
-	formLogin, UsernameLogin, PasswordLogin := component.GetFormLogin()
-	formRegistration, UsernameRegistration, PasswordRegistration, NewPasswordEntryRegistration := component.GetFormRegistration()
+	separator := widget.NewSeparator()
+	usernameLogin := widget.NewEntry()
+	passwordLogin := widget.NewPasswordEntry()
+	usernameRegistration := widget.NewEntry()
+	passwordRegistration := widget.NewPasswordEntry()
+	passwordEntryRegistration := widget.NewPasswordEntry()
+	labelAlertAuth := widget.NewLabel("Text")
+	formLogin := component.GetFormLogin(usernameLogin, passwordLogin)
+	formRegistration := component.GetFormRegistration(usernameRegistration, passwordRegistration, passwordEntryRegistration)
 	formText := component.GetFormText()
 	formCart := component.GetFormCart()
 	//----------------------------------------------------------------------
@@ -61,8 +64,7 @@ func main() {
 		}
 	})
 	//----------------------------------------------------------------------
-	buttonTop := widget.NewButton("Обновить данные", func() {
-	})
+	buttonTop := widget.NewButton("Обновить данные", func() {})
 	buttonText := widget.NewButton("Добавить текстовые данные", func() {
 		window.SetContent(containerFormText)
 		window.Show()
@@ -71,26 +73,50 @@ func main() {
 		window.SetContent(containerFormCart)
 		window.Show()
 	})
-
 	tabText := component.GetTabTexts(buttonTop, buttonText)
 	tabCart := component.GetTabCarts(buttonTop, buttonCart)
 	tabFile := component.GetTabFiles()
 	containerTabs := container.NewAppTabs(tabText, tabCart, tabFile)
 	//----------------------------------------------------------------------
 	button := widget.NewButton("Submit", func() {
-		log.Println("Submit")
 		if radio.Selected == "Login" {
-			if UsernameLogin.Text == user && PasswordLogin.Text == password {
-				window.SetContent(containerTabs)
-				window.Resize(fyne.NewSize(1250, 300))
-				window.Show()
+			user, exists := users[usernameLogin.Text]
+			if exists {
+				if user.Password != passwordLogin.Text {
+					labelAlertAuth.SetText("Неверный пароль")
+					log.Println(labelAlertAuth.Text)
+				} else {
+					window.SetContent(containerTabs)
+					window.Resize(fyne.NewSize(1250, 300))
+					window.Show()
+				}
+			} else {
+				labelAlertAuth.SetText("Данного пользователя не существует")
+				log.Println(labelAlertAuth.Text)
 			}
 		}
 		if radio.Selected == "Registration" {
-			if UsernameRegistration.Text == user && PasswordRegistration.Text == password && NewPasswordEntryRegistration.Text == password {
-				window.SetContent(containerTabs)
-				window.Resize(fyne.NewSize(1250, 300))
-				window.Show()
+			_, exists := users[passwordLogin.Text]
+
+			if !exists {
+				if utf8.RuneCountInString(usernameRegistration.Text) < 6 {
+					labelAlertAuth.SetText("Длинна логина должна быть не менее шести символов")
+					log.Println(labelAlertAuth.Text)
+				} else if utf8.RuneCountInString(passwordRegistration.Text) < 6 {
+					labelAlertAuth.SetText("Длинна пароля должна быть не менее шести символов")
+					log.Println(labelAlertAuth.Text)
+				} else if passwordRegistration.Text != passwordEntryRegistration.Text {
+					labelAlertAuth.SetText("Пароли не совпали")
+					log.Println(labelAlertAuth.Text)
+				} else {
+					users[usernameRegistration.Text] = model.User{Name: usernameRegistration.Text, Password: passwordRegistration.Text}
+					window.SetContent(containerTabs)
+					window.Resize(fyne.NewSize(1250, 300))
+					window.Show()
+				}
+			} else {
+				labelAlertAuth.SetText("Данный пользователь уже существует")
+				log.Println(labelAlertAuth.Text)
 			}
 		}
 	})
@@ -105,8 +131,8 @@ func main() {
 	})
 
 	containerRadio = container.NewVBox(radio)
-	containerFormLogin = container.NewVBox(formLogin, button, separator, radio)
-	containerFormRegistration = container.NewVBox(formRegistration, button, separator, radio)
+	containerFormLogin = container.NewVBox(formLogin, button, labelAlertAuth, separator, radio)
+	containerFormRegistration = container.NewVBox(formRegistration, button, labelAlertAuth, separator, radio)
 	containerFormText = container.NewVBox(formText, buttonTextAdd)
 	containerFormCart = container.NewVBox(formCart, buttonCartAdd)
 

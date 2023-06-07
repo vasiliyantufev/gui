@@ -3,10 +3,10 @@ package model
 import "time"
 
 type Cart struct {
-	name          string
-	paymentSystem string
-	number        string
-	holder        string
-	cvc           int
-	endData       time.Time
+	Name          string
+	PaymentSystem string
+	Number        string
+	Holder        string
+	CVC           int
+	EndData       time.Time
 }
