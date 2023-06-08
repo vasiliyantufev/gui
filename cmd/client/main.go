@@ -178,6 +178,12 @@ func main() {
 			} else {
 				texts[textNameEntry.Text] = model.Text{Name: textNameEntry.Text, Text: textEntry.Text, Description: textDescriptionEntry.Text}
 				log.Println("Текст добавлен")
+
+				textNameEntry.Text = ""
+				textEntry.Text = ""
+				textDescriptionEntry.Text = ""
+				formText.Refresh()
+
 				window.SetContent(containerTabs)
 				window.Show()
 			}
@@ -210,13 +216,14 @@ func main() {
 				labelAlertCart.SetText("CVC не заполнен")
 				log.Println(labelAlertCart.Text)
 			} else {
-				endDate, errData := time.Parse(time.RFC3339, endDateEntry.Text)
+				layout := "01/02/2006"
+				endDate, errData := time.Parse(layout, endDateEntry.Text)
 				cvc, errCvc := strconv.Atoi(cvcEntry.Text)
 				if errData != nil {
-					labelAlertCart.SetText("End Date не корректный")
+					labelAlertCart.SetText("End Date не корректный (пример: 01/02/2006)")
 					log.Println(labelAlertCart.Text)
 				} else if errCvc != nil {
-					labelAlertCart.SetText("CVC не корректный")
+					labelAlertCart.SetText("CVC не корректный (пример: 123)")
 					log.Println(labelAlertCart.Text)
 				} else {
 					carts[cartNameEntry.Text] = model.Cart{
@@ -227,6 +234,15 @@ func main() {
 						EndData:       endDate,
 						CVC:           cvc}
 					log.Println("Текст добавлен")
+
+					cartNameEntry.Text = ""
+					paymentSystemEntry.Text = ""
+					numberEntry.Text = ""
+					holderEntry.Text = ""
+					endDateEntry.Text = ""
+					cvcEntry.Text = ""
+					formCart.Refresh()
+
 					window.SetContent(containerTabs)
 					window.Show()
 				}
