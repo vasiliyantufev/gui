@@ -19,16 +19,10 @@ import (
 func main() {
 
 	dataTblText := [][]string{
-		{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"},
-		{"name_1", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_2", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_N", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"}}
+		{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"}}
 
 	dataTblCart := [][]string{
-		{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"},
-		{"name_1", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_2", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
-		{"name_N", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"}}
+		{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"}}
 
 	users := make(map[string]model.User)
 	texts := make(map[string]model.Text)
@@ -72,6 +66,8 @@ func main() {
 	labelAlertText := widget.NewLabel("")
 	labelAlertCart := widget.NewLabel("")
 	labelAlertAuth.Hide()
+	labelAlertText.Hide()
+	labelAlertCart.Hide()
 
 	formLogin := component.GetFormLogin(usernameLoginEntry, passwordLoginEntry)
 	formRegistration := component.GetFormRegistration(usernameRegistrationEntry, passwordRegistrationEntry, passwordConfirmationRegistrationEntry)
@@ -164,6 +160,7 @@ func main() {
 	})
 
 	buttonTextAdd := widget.NewButton("Добавить", func() {
+		labelAlertText.Show()
 		_, exists := texts[textNameEntry.Text]
 		if exists {
 			labelAlertText.SetText("Текст с таким name уже существует")
@@ -184,6 +181,7 @@ func main() {
 				textDescriptionEntry.Text = ""
 				formText.Refresh()
 
+				labelAlertText.Hide()
 				window.SetContent(containerTabs)
 				window.Show()
 			}
@@ -192,6 +190,7 @@ func main() {
 	})
 
 	buttonCartAdd := widget.NewButton("Добавить", func() {
+		labelAlertCart.Show()
 		_, exists := carts[cartNameEntry.Text]
 		if exists {
 			labelAlertCart.SetText("Карта с таким name уже существует")
@@ -243,6 +242,7 @@ func main() {
 					cvcEntry.Text = ""
 					formCart.Refresh()
 
+					labelAlertCart.Hide()
 					window.SetContent(containerTabs)
 					window.Show()
 				}
