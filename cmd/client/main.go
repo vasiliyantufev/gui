@@ -28,10 +28,6 @@ func main() {
 	texts := make(map[string]model.Text)
 	carts := make(map[string]model.Cart)
 
-	fmt.Print(users)
-	fmt.Print(texts)
-	fmt.Print(carts)
-
 	application := app.New()
 	application.Settings().SetTheme(theme.LightTheme())
 
@@ -94,11 +90,17 @@ func main() {
 	tblCart := component.GetTableCart(dataTblCart)
 	buttonTop := widget.NewButton("Обновить данные", func() {
 		i++
-		dataTblText[1][1] = strconv.Itoa(i)
-		dataTblCart[1][1] = strconv.Itoa(i)
+		dataTblText[0][0] = strconv.Itoa(i)
+		dataTblCart[0][0] = strconv.Itoa(i)
 		tblText.Refresh()
 		tblCart.Refresh()
+
+		tblText.Resize(fyne.NewSize(5, 2))
+		dataTblText = append(dataTblText, []string{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"})
+		tblText.Refresh()
+
 	})
+	//----------------------------------------------------------------------
 
 	buttonText := widget.NewButton("Добавить текстовые данные", func() {
 		window.SetContent(containerFormText)
@@ -159,6 +161,9 @@ func main() {
 		}
 	})
 
+	var index float32
+	index = 1
+
 	buttonTextAdd := widget.NewButton("Добавить", func() {
 		labelAlertText.Show()
 		_, exists := texts[textNameEntry.Text]
@@ -173,13 +178,17 @@ func main() {
 				labelAlertText.SetText("Длинна text должна быть не менее шести символов")
 				log.Println(labelAlertText.Text)
 			} else {
-				texts[textNameEntry.Text] = model.Text{Name: textNameEntry.Text, Text: textEntry.Text, Description: textDescriptionEntry.Text}
+				texts[textNameEntry.Text] = model.Text{
+					Name:        textNameEntry.Text,
+					Text:        textEntry.Text,
+					Description: textDescriptionEntry.Text}
 				log.Println("Текст добавлен")
+
+				index++
 
 				textNameEntry.Text = ""
 				textEntry.Text = ""
 				textDescriptionEntry.Text = ""
-				formText.Refresh()
 
 				labelAlertText.Hide()
 				window.SetContent(containerTabs)
