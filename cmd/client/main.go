@@ -18,6 +18,18 @@ import (
 
 func main() {
 
+	dataTblText := [][]string{
+		{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"},
+		{"name_1", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_2", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_N", "text", "text", "01-01-2023 08:30", "01-01-2023 10:30"}}
+
+	dataTblCart := [][]string{
+		{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"},
+		{"name_1", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_2", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"},
+		{"name_N", "Visa", "1234567890", "Artur", "123", "01-01-2023 10:30", "01-01-2023 08:30", "01-01-2023 10:30"}}
+
 	users := make(map[string]model.User)
 	texts := make(map[string]model.Text)
 	carts := make(map[string]model.Cart)
@@ -59,6 +71,7 @@ func main() {
 	labelAlertAuth := widget.NewLabel("")
 	labelAlertText := widget.NewLabel("")
 	labelAlertCart := widget.NewLabel("")
+	labelAlertAuth.Hide()
 
 	formLogin := component.GetFormLogin(usernameLoginEntry, passwordLoginEntry)
 	formRegistration := component.GetFormRegistration(usernameRegistrationEntry, passwordRegistrationEntry, passwordConfirmationRegistrationEntry)
@@ -80,7 +93,17 @@ func main() {
 		}
 	})
 	//----------------------------------------------------------------------
-	buttonTop := widget.NewButton("Обновить данные", func() {})
+	i := 1
+	tblText := component.GetTableText(dataTblText)
+	tblCart := component.GetTableCart(dataTblCart)
+	buttonTop := widget.NewButton("Обновить данные", func() {
+		i++
+		dataTblText[1][1] = strconv.Itoa(i)
+		dataTblCart[1][1] = strconv.Itoa(i)
+		tblText.Refresh()
+		tblCart.Refresh()
+	})
+
 	buttonText := widget.NewButton("Добавить текстовые данные", func() {
 		window.SetContent(containerFormText)
 		window.Show()
@@ -89,12 +112,15 @@ func main() {
 		window.SetContent(containerFormCart)
 		window.Show()
 	})
-	tabText := component.GetTabTexts(buttonTop, buttonText)
-	tabCart := component.GetTabCarts(buttonTop, buttonCart)
+
+	tabText := component.GetTabTexts(tblText, buttonTop, buttonText)
+	tabCart := component.GetTabCarts(tblCart, buttonTop, buttonCart)
 	tabFile := component.GetTabFiles()
+
 	containerTabs := container.NewAppTabs(tabText, tabCart, tabFile)
 	//----------------------------------------------------------------------
 	button := widget.NewButton("Submit", func() {
+		labelAlertAuth.Show()
 		if radio.Selected == "Login" {
 			user, exists := users[usernameLoginEntry.Text]
 			if exists {
@@ -193,8 +219,13 @@ func main() {
 					labelAlertCart.SetText("CVC не корректный")
 					log.Println(labelAlertCart.Text)
 				} else {
-					carts[cartNameEntry.Text] = model.Cart{Name: cartNameEntry.Text, PaymentSystem: paymentSystemEntry.Text, Number: numberEntry.Text,
-						Holder: holderEntry.Text, EndData: endDate, CVC: cvc}
+					carts[cartNameEntry.Text] = model.Cart{
+						Name:          cartNameEntry.Text,
+						PaymentSystem: paymentSystemEntry.Text,
+						Number:        numberEntry.Text,
+						Holder:        holderEntry.Text,
+						EndData:       endDate,
+						CVC:           cvc}
 					log.Println("Текст добавлен")
 					window.SetContent(containerTabs)
 					window.Show()
