@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -17,10 +16,8 @@ import (
 )
 
 func main() {
-
 	application := app.New()
 	application.Settings().SetTheme(theme.LightTheme())
-
 	window := application.NewWindow("GophKeeper")
 	window.Resize(fyne.NewSize(250, 80))
 
@@ -114,7 +111,7 @@ func main() {
 		window.SetContent(containerFormCart)
 		window.Show()
 	})
-	//---------------------------------------------------------------------- containerTabs
+	//---------------------------------------------------------------------- table text init
 	tblText = widget.NewTable(
 		func() (int, int) {
 			return len(dataTblText), len(dataTblText[0])
@@ -126,7 +123,7 @@ func main() {
 			o.(*widget.Label).SetText(dataTblText[i.Row][i.Col])
 		})
 	service.SetDefaultColumnsWidthText(tblText)
-
+	//---------------------------------------------------------------------- table cart init
 	tblCart = widget.NewTable(
 		func() (int, int) {
 			return len(dataTblCart), len(dataTblCart[0])
@@ -138,7 +135,7 @@ func main() {
 			o.(*widget.Label).SetText(dataTblCart[i.Row][i.Col])
 		})
 	service.SetDefaultColumnsWidthCart(tblCart)
-
+	//---------------------------------------------------------------------- containerTabs
 	tabText = component.GetTabTexts(tblText, buttonTop, buttonText)
 	tabCart = component.GetTabCarts(tblCart, buttonTop, buttonCart)
 	tabFile = component.GetTabFiles()
@@ -178,7 +175,6 @@ func main() {
 				Name:        textNameEntry.Text,
 				Text:        textEntry.Text,
 				Description: textDescriptionEntry.Text}
-
 			service.ClearText(textNameEntry, textEntry, textDescriptionEntry)
 			log.Print("Текст добавлен")
 
@@ -205,16 +201,15 @@ func main() {
 				Holder:        holderEntry.Text,
 				EndData:       endDate,
 				CVC:           cvc}
+			service.ClearCart(cartNameEntry, paymentSystemEntry, numberEntry, holderEntry, endDateEntry, cvcEntry)
 			log.Print("Карта добавлена")
 
-			service.ClearCart(cartNameEntry, paymentSystemEntry, numberEntry, holderEntry, endDateEntry, cvcEntry)
-			formCart.Refresh()
-
 			labelAlertCart.Hide()
+			formCart.Refresh()
 			window.SetContent(containerTabs)
 			window.Show()
 		}
-		fmt.Print(carts)
+		log.Print(carts)
 	})
 	//---------------------------------------------------------------------- containers init
 	containerRadio = container.NewVBox(radioAuth)
