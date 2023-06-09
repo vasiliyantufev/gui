@@ -18,27 +18,42 @@ import (
 
 func main() {
 
-	var dataTblText = [][]string{}
-	var dataTblCart = [][]string{}
-	var radioOptions = []string{"Login", "Registration"}
-
-	var users = make(map[string]model.User)
-	var texts = make(map[string]model.Text)
-	var carts = make(map[string]model.Cart)
-
-	var containerRadio *fyne.Container
-	var containerFormLogin *fyne.Container
-	var containerFormRegistration *fyne.Container
-	var containerFormText *fyne.Container
-	var containerFormCart *fyne.Container
-
 	application := app.New()
 	application.Settings().SetTheme(theme.LightTheme())
 
 	window := application.NewWindow("GophKeeper")
 	window.Resize(fyne.NewSize(250, 80))
 
-	//---------------------------------------------------------------------- widgets
+	var index = 1
+	//---------------------------------------------------------------------- slices
+	var dataTblText = [][]string{{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"}}
+	var dataTblCart = [][]string{{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"}}
+	var radioOptions = []string{"Login", "Registration"}
+	//---------------------------------------------------------------------- maps
+	var users = make(map[string]model.User)
+	var texts = make(map[string]model.Text)
+	var carts = make(map[string]model.Cart)
+	//---------------------------------------------------------------------- containers
+	var containerRadio *fyne.Container
+	var containerFormLogin *fyne.Container
+	var containerFormRegistration *fyne.Container
+	var containerFormText *fyne.Container
+	var containerFormCart *fyne.Container
+	//---------------------------------------------------------------------- buttons
+	var buttonAuth *widget.Button
+	var buttonTop *widget.Button
+	var buttonText *widget.Button
+	var buttonCart *widget.Button
+	var buttonTextAdd *widget.Button
+	var buttonCartAdd *widget.Button
+	//---------------------------------------------------------------------- tabs
+	var containerTabs *container.AppTabs
+	var tblText *widget.Table
+	var tblCart *widget.Table
+	var tabText *container.TabItem
+	var tabCart *container.TabItem
+	var tabFile *container.TabItem
+	//---------------------------------------------------------------------- entries init
 	separator := widget.NewSeparator()
 	usernameLoginEntry := widget.NewEntry()
 	passwordLoginEntry := widget.NewPasswordEntry()
@@ -54,18 +69,19 @@ func main() {
 	holderEntry := widget.NewEntry()
 	endDateEntry := widget.NewEntry()
 	cvcEntry := widget.NewEntry()
+	//---------------------------------------------------------------------- labels init
 	labelAlertAuth := widget.NewLabel("")
 	labelAlertText := widget.NewLabel("")
 	labelAlertCart := widget.NewLabel("")
 	labelAlertAuth.Hide()
 	labelAlertText.Hide()
 	labelAlertCart.Hide()
-	//---------------------------------------------------------------------- forms
+	//---------------------------------------------------------------------- forms init
 	formLogin := component.GetFormLogin(usernameLoginEntry, passwordLoginEntry)
 	formRegistration := component.GetFormRegistration(usernameRegistrationEntry, passwordRegistrationEntry, passwordConfirmationRegistrationEntry)
 	formText := component.GetFormText(textNameEntry, textEntry, textDescriptionEntry)
 	formCart := component.GetFormCart(cartNameEntry, paymentSystemEntry, numberEntry, holderEntry, endDateEntry, cvcEntry)
-	//---------------------------------------------------------------------- radio
+	//---------------------------------------------------------------------- radio event
 	radioAuth := widget.NewRadioGroup(radioOptions, func(value string) {
 		log.Println("Radio set to ", value)
 		if value == "Login" {
@@ -79,30 +95,31 @@ func main() {
 			window.Show()
 		}
 	})
-	//---------------------------------------------------------------------- tabs
-	var i = 1
-	buttonText := widget.NewButton("Добавить текстовые данные", func() {
+	//---------------------------------------------------------------------- buttons event
+	buttonTop = widget.NewButton("Обновить данные", func() {
+		index++
+		dataTblText = append(dataTblText, []string{"name_" + strconv.Itoa(index), "data", "description", "01/02/2006", "01/02/2006"})
+		tblText.Resize(fyne.NewSize(float32(len(dataTblText)), float32(len(dataTblText[0]))))
+		tblText.Refresh()
+		window.SetContent(containerTabs)
+	})
+	buttonText = widget.NewButton("Добавить текстовые данные", func() {
 		window.SetContent(containerFormText)
 		window.Show()
 	})
-	buttonCart := widget.NewButton("Добавить банковскую карту", func() {
+	buttonCart = widget.NewButton("Добавить банковскую карту", func() {
 		window.SetContent(containerFormCart)
 		window.Show()
 	})
-	buttonTop := widget.NewButton("Обновить данные", func() {
-		i++
-		dataTblText[0][0] = strconv.Itoa(i)
-		dataTblCart[0][0] = strconv.Itoa(i)
-	})
-
-	tblText := component.GetTableText(dataTblText)
-	tblCart := component.GetTableCart(dataTblCart)
-	tabText := component.GetTabTexts(tblText, buttonTop, buttonText)
-	tabCart := component.GetTabCarts(tblCart, buttonTop, buttonCart)
-	tabFile := component.GetTabFiles()
-	containerTabs := container.NewAppTabs(tabText, tabCart, tabFile)
-	//----------------------------------------------------------------------
-	buttonAuth := widget.NewButton("Submit", func() {
+	//---------------------------------------------------------------------- containerTabs
+	tblText = component.GetTableText(dataTblText)
+	tblCart = component.GetTableCart(dataTblCart)
+	tabText = component.GetTabTexts(tblText, buttonTop, buttonText)
+	tabCart = component.GetTabCarts(tblCart, buttonTop, buttonCart)
+	tabFile = component.GetTabFiles()
+	containerTabs = container.NewAppTabs(tabText, tabCart, tabFile)
+	//---------------------------------------------------------------------- auth event
+	buttonAuth = widget.NewButton("Submit", func() {
 		labelAlertAuth.Show()
 		valid := false
 		if radioAuth.Selected == "Login" {
@@ -125,8 +142,8 @@ func main() {
 			}
 		}
 	})
-	//----------------------------------------------------------------------
-	buttonTextAdd := widget.NewButton("Добавить", func() {
+	//---------------------------------------------------------------------- text event
+	buttonTextAdd = widget.NewButton("Добавить", func() {
 		labelAlertText.Show()
 		valid := false
 		_, exists := texts[textNameEntry.Text]
@@ -147,8 +164,8 @@ func main() {
 		}
 		log.Print(texts)
 	})
-	//----------------------------------------------------------------------
-	buttonCartAdd := widget.NewButton("Добавить", func() {
+	//---------------------------------------------------------------------- cart event
+	buttonCartAdd = widget.NewButton("Добавить", func() {
 		labelAlertCart.Show()
 		var endDate time.Time
 		var cvc int
@@ -174,7 +191,7 @@ func main() {
 		}
 		fmt.Print(carts)
 	})
-	//---------------------------------------------------------------------- containers
+	//---------------------------------------------------------------------- containers init
 	containerRadio = container.NewVBox(radioAuth)
 	containerFormLogin = container.NewVBox(formLogin, buttonAuth, labelAlertAuth, separator, radioAuth)
 	containerFormRegistration = container.NewVBox(formRegistration, buttonAuth, labelAlertAuth, separator, radioAuth)
