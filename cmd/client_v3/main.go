@@ -101,6 +101,9 @@ func main() {
 		dataTblText = append(dataTblText, []string{"name_" + strconv.Itoa(index), "data", "description", "01/02/2006", "01/02/2006"})
 		tblText.Resize(fyne.NewSize(float32(len(dataTblText)), float32(len(dataTblText[0]))))
 		tblText.Refresh()
+		dataTblCart = append(dataTblCart, []string{"name_" + strconv.Itoa(index), "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"})
+		tblCart.Resize(fyne.NewSize(float32(len(dataTblCart)), float32(len(dataTblCart[0]))))
+		tblCart.Refresh()
 		window.SetContent(containerTabs)
 	})
 	buttonText = widget.NewButton("Добавить текстовые данные", func() {
@@ -112,8 +115,30 @@ func main() {
 		window.Show()
 	})
 	//---------------------------------------------------------------------- containerTabs
-	tblText = component.GetTableText(dataTblText)
-	tblCart = component.GetTableCart(dataTblCart)
+	tblText = widget.NewTable(
+		func() (int, int) {
+			return len(dataTblText), len(dataTblText[0])
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("wide content")
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			o.(*widget.Label).SetText(dataTblText[i.Row][i.Col])
+		})
+	service.SetDefaultColumnsWidthText(tblText)
+
+	tblCart = widget.NewTable(
+		func() (int, int) {
+			return len(dataTblCart), len(dataTblCart[0])
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("wide content")
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			o.(*widget.Label).SetText(dataTblCart[i.Row][i.Col])
+		})
+	service.SetDefaultColumnsWidthCart(tblCart)
+
 	tabText = component.GetTabTexts(tblText, buttonTop, buttonText)
 	tabCart = component.GetTabCarts(tblCart, buttonTop, buttonCart)
 	tabFile = component.GetTabFiles()

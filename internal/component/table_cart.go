@@ -5,7 +5,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func setDefaultColumnsWidthCart(table *widget.Table) {
+func SetDefaultColumnsWidthCart(table *widget.Table) {
 	colWidths := []float32{150, 150, 150, 150, 50, 150, 150, 150, 150}
 	for idx, colWidth := range colWidths {
 		table.SetColumnWidth(idx, colWidth)
@@ -23,6 +23,6 @@ func GetTableCart(dataTblCart [][]string) *widget.Table {
 		func(i widget.TableCellID, o fyne.CanvasObject) {
 			o.(*widget.Label).SetText(dataTblCart[i.Row][i.Col])
 		})
-	setDefaultColumnsWidthCart(tableDataCart)
+	SetDefaultColumnsWidthCart(tableDataCart)
 	return tableDataCart
 }

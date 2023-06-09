@@ -8,8 +8,8 @@ import (
 )
 
 var data = [][]string{
-	[]string{"top left", "top right"},
-	[]string{"bottom left", "bottom right"}}
+	{"top left", "top right"},
+	{"bottom left", "bottom right"}}
 
 func setDefaultColumnsWidthCart(table *widget.Table) {
 	colWidths := []float32{150, 150, 150}

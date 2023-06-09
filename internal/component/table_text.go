@@ -13,7 +13,7 @@ func SetDefaultColumnsWidthText(table *widget.Table) {
 }
 
 func GetTableText(dataTblCart [][]string) *widget.Table {
-	tableDataCart := widget.NewTable(
+	tableDataText := widget.NewTable(
 		func() (int, int) {
 			return len(dataTblCart), len(dataTblCart[0])
 		},
@@ -23,6 +23,6 @@ func GetTableText(dataTblCart [][]string) *widget.Table {
 		func(i widget.TableCellID, o fyne.CanvasObject) {
 			o.(*widget.Label).SetText(dataTblCart[i.Row][i.Col])
 		})
-	SetDefaultColumnsWidthText(tableDataCart)
-	return tableDataCart
+	SetDefaultColumnsWidthText(tableDataText)
+	return tableDataText
 }
