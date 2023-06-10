@@ -153,9 +153,9 @@ func main() {
 		if radioAuth.Selected == "Registration" {
 			valid = service.ValidateRegistration(usernameRegistrationEntry, passwordRegistrationEntry, passwordConfirmationRegistrationEntry, labelAlertAuth)
 			if valid {
-				user.ID, exist = service.UserExist(usernameRegistrationEntry.Text) //ищем в бд
+				exist = service.UserExist(usernameRegistrationEntry.Text) //ищем в бд
 				if !exist {
-					user = model.User{ID: user.ID, Name: usernameRegistrationEntry.Text, Password: passwordRegistrationEntry.Text}
+					user = service.Registration(usernameRegistrationEntry.Text, passwordRegistrationEntry.Text)
 					window.SetContent(containerTabs)
 					window.Resize(fyne.NewSize(1250, 300))
 					window.Show()
