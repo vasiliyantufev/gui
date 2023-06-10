@@ -7,30 +7,24 @@ import (
 	"unicode/utf8"
 
 	"fyne.io/fyne/v2/widget"
-	"github.com/vasiliyantufev/gui/internal/model"
 )
 
-func ValidateLogin(exists bool, user model.User, passwordLoginEntry *widget.Entry, labelAlertAuth *widget.Label) bool {
-	if !exists {
-		labelAlertAuth.SetText("Данного пользователя не существует")
+func ValidateLogin(usernameLoginEntry *widget.Entry, passwordLoginEntry *widget.Entry, labelAlertAuth *widget.Label) bool {
+	if utf8.RuneCountInString(usernameLoginEntry.Text) < 6 {
+		labelAlertAuth.SetText("Длинна логина должна быть не менее шести символов")
 		log.Print(labelAlertAuth.Text)
 		return false
 	}
-	if user.Password != passwordLoginEntry.Text {
-		labelAlertAuth.SetText("Неверный пароль")
+	if utf8.RuneCountInString(passwordLoginEntry.Text) < 6 {
+		labelAlertAuth.SetText("Длинна пароля должна быть не менее шести символов")
 		log.Print(labelAlertAuth.Text)
 		return false
 	}
 	return true
 }
 
-func ValidateRegistration(exists bool, usernameRegistrationEntry *widget.Entry, passwordRegistrationEntry *widget.Entry,
+func ValidateRegistration(usernameRegistrationEntry *widget.Entry, passwordRegistrationEntry *widget.Entry,
 	passwordConfirmationRegistrationEntry *widget.Entry, labelAlertAuth *widget.Label) bool {
-	if exists {
-		labelAlertAuth.SetText("Данный пользователь уже существует")
-		log.Print(labelAlertAuth.Text)
-		return false
-	}
 	if utf8.RuneCountInString(usernameRegistrationEntry.Text) < 6 {
 		labelAlertAuth.SetText("Длинна логина должна быть не менее шести символов")
 		log.Print(labelAlertAuth.Text)

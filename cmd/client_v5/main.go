@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"strconv"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -21,15 +20,17 @@ func main() {
 	window := application.NewWindow("GophKeeper")
 	window.Resize(fyne.NewSize(250, 80))
 
-	var index = 1
 	//---------------------------------------------------------------------- slices
 	var dataTblText = [][]string{{"NAME", "DATA", "DESCRIPTION", "CREATED_AT", "UPDATED_AT"}}
 	var dataTblCart = [][]string{{"NAME", "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"}}
+
 	var radioOptions = []string{"Login", "Registration"}
-	//---------------------------------------------------------------------- maps
-	var users = make(map[string]model.User)
-	var texts = make(map[string]model.Text)
-	var carts = make(map[string]model.Cart)
+	//----------------------------------------------------------------------
+	var user = model.User{}
+	var exist bool
+	var valid bool
+	var layout string
+	layout = "01/02/2006 15:04:05"
 	//---------------------------------------------------------------------- containers
 	var containerRadio *fyne.Container
 	var containerFormLogin *fyne.Container
@@ -49,7 +50,7 @@ func main() {
 	var tblCart *widget.Table
 	var tabText *container.TabItem
 	var tabCart *container.TabItem
-	var tabFile *container.TabItem
+	//var tabFile *container.TabItem
 	//---------------------------------------------------------------------- entries init
 	separator := widget.NewSeparator()
 	usernameLoginEntry := widget.NewEntry()
@@ -94,11 +95,9 @@ func main() {
 	})
 	//---------------------------------------------------------------------- buttons event
 	buttonTop = widget.NewButton("Обновить данные", func() {
-		index++
-		dataTblText = append(dataTblText, []string{"name_" + strconv.Itoa(index), "data", "description", "01/02/2006", "01/02/2006"})
+		dataTblText, dataTblCart = service.Sync(user.ID)
 		tblText.Resize(fyne.NewSize(float32(len(dataTblText)), float32(len(dataTblText[0]))))
 		tblText.Refresh()
-		dataTblCart = append(dataTblCart, []string{"name_" + strconv.Itoa(index), "PAYMENT SYSTEM", "NUMBER", "HOLDER", "CVC", "END DATE", "CREATED_AT", "UPDATED_AT"})
 		tblCart.Resize(fyne.NewSize(float32(len(dataTblCart)), float32(len(dataTblCart[0]))))
 		tblCart.Refresh()
 		window.SetContent(containerTabs)
@@ -138,43 +137,48 @@ func main() {
 	//---------------------------------------------------------------------- containerTabs
 	tabText = component.GetTabTexts(tblText, buttonTop, buttonText)
 	tabCart = component.GetTabCarts(tblCart, buttonTop, buttonCart)
-	tabFile = component.GetTabFiles()
-	containerTabs = container.NewAppTabs(tabText, tabCart, tabFile)
+	//tabFile = component.GetTabFiles()
+	//containerTabs = container.NewAppTabs(tabText, tabCart, tabFile)
+	containerTabs = container.NewAppTabs(tabText, tabCart)
 	//---------------------------------------------------------------------- auth event
 	buttonAuth = widget.NewButton("Submit", func() {
 		labelAlertAuth.Show()
-		valid := false
+		valid = false
 		if radioAuth.Selected == "Login" {
-			user, exists := users[usernameLoginEntry.Text]
-			valid = service.ValidateLogin(exists, user, passwordLoginEntry, labelAlertAuth)
+			valid = service.ValidateLogin(usernameLoginEntry, passwordLoginEntry, labelAlertAuth)
 			if valid {
-				window.SetContent(containerTabs)
-				window.Resize(fyne.NewSize(1250, 300))
-				window.Show()
+				user, exist = service.Authentication(usernameLoginEntry.Text, passwordLoginEntry.Text) //ищем в бд
+				if exist {
+					dataTblText, dataTblCart = service.Sync(user.ID)
+					window.SetContent(containerTabs)
+					window.Resize(fyne.NewSize(1250, 300))
+					window.Show()
+				}
 			}
 		}
 		if radioAuth.Selected == "Registration" {
-			_, exists := users[passwordLoginEntry.Text]
-			valid = service.ValidateRegistration(exists, usernameRegistrationEntry, passwordRegistrationEntry, passwordConfirmationRegistrationEntry, labelAlertAuth)
+			valid = service.ValidateRegistration(usernameRegistrationEntry, passwordRegistrationEntry, passwordConfirmationRegistrationEntry, labelAlertAuth)
 			if valid {
-				users[usernameRegistrationEntry.Text] = model.User{Name: usernameRegistrationEntry.Text, Password: passwordRegistrationEntry.Text}
-				window.SetContent(containerTabs)
-				window.Resize(fyne.NewSize(1250, 300))
-				window.Show()
+				user.ID, exist = service.UserExist(usernameRegistrationEntry.Text) //ищем в бд
+				if !exist {
+					user = model.User{ID: user.ID, Name: usernameRegistrationEntry.Text, Password: passwordRegistrationEntry.Text}
+					window.SetContent(containerTabs)
+					window.Resize(fyne.NewSize(1250, 300))
+					window.Show()
+				}
 			}
 		}
 	})
 	//---------------------------------------------------------------------- text event
 	buttonTextAdd = widget.NewButton("Добавить", func() {
 		labelAlertText.Show()
-		valid := false
-		_, exists := texts[textNameEntry.Text]
-		valid = service.ValidateText(exists, textNameEntry, textEntry, textDescriptionEntry, labelAlertText)
+		valid = false
+		exist = service.SearchByColumn(dataTblText, 0, textNameEntry.Text) //ищем в мапке
+		valid = service.ValidateText(exist, textNameEntry, textEntry, textDescriptionEntry, labelAlertText)
 		if valid {
-			texts[textNameEntry.Text] = model.Text{
-				Name:        textNameEntry.Text,
-				Text:        textEntry.Text,
-				Description: textDescriptionEntry.Text}
+			dataTblText = append(dataTblText, []string{textNameEntry.Text, textEntry.Text, textDescriptionEntry.Text,
+				time.Now().Format(layout), time.Now().Format(layout)})
+
 			service.ClearText(textNameEntry, textEntry, textDescriptionEntry)
 			log.Print("Текст добавлен")
 
@@ -183,24 +187,19 @@ func main() {
 			window.SetContent(containerTabs)
 			window.Show()
 		}
-		log.Print(texts)
+		log.Print(dataTblText)
 	})
 	//---------------------------------------------------------------------- cart event
 	buttonCartAdd = widget.NewButton("Добавить", func() {
 		labelAlertCart.Show()
-		var endDate time.Time
-		var cvc int
-		valid := false
-		_, exists := carts[cartNameEntry.Text]
-		valid, endDate, cvc = service.ValidateCart(exists, cartNameEntry, paymentSystemEntry, numberEntry, holderEntry, endDateEntry, cvcEntry, labelAlertCart)
+		valid = false
+		exist = service.SearchByColumn(dataTblCart, 0, cartNameEntry.Text) //ищем в мапке
+		valid = service.ValidateCart(exist, cartNameEntry, paymentSystemEntry, numberEntry, holderEntry, endDateEntry, cvcEntry, labelAlertCart)
 		if valid {
-			carts[cartNameEntry.Text] = model.Cart{
-				Name:          cartNameEntry.Text,
-				PaymentSystem: paymentSystemEntry.Text,
-				Number:        numberEntry.Text,
-				Holder:        holderEntry.Text,
-				EndData:       endDate,
-				CVC:           cvc}
+			layout := "01/02/2006 15:04:05"
+			dataTblCart = append(dataTblCart, []string{cartNameEntry.Text, paymentSystemEntry.Text, numberEntry.Text, holderEntry.Text,
+				cvcEntry.Text, endDateEntry.Text, time.Now().Format(layout), time.Now().Format(layout)})
+
 			service.ClearCart(cartNameEntry, paymentSystemEntry, numberEntry, holderEntry, endDateEntry, cvcEntry)
 			log.Print("Карта добавлена")
 
@@ -209,7 +208,7 @@ func main() {
 			window.SetContent(containerTabs)
 			window.Show()
 		}
-		log.Print(carts)
+		log.Print(dataTblCart)
 	})
 	//---------------------------------------------------------------------- containers init
 	containerRadio = container.NewVBox(radioAuth)
