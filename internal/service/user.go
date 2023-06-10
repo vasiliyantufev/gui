@@ -11,7 +11,6 @@ func UserExist(username string) (int64, bool) {
 
 func Authentication(username, password string) (model.User, bool) {
 	userId = 1
-
 	user := model.User{ID: userId, Name: username, Password: password}
 	return user, true
 }
