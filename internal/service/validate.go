@@ -55,13 +55,13 @@ func ValidateText(exists bool, textNameEntry *widget.Entry, textEntry *widget.En
 		log.Print(labelAlertText)
 		return false
 	}
-	if utf8.RuneCountInString(textNameEntry.Text) < 6 {
-		labelAlertText.SetText("Длинна name должна быть не менее шести символов")
+	if textNameEntry.Text == "" {
+		labelAlertText.SetText("Name не заполнен")
 		log.Print(labelAlertText.Text)
 		return false
 	}
-	if utf8.RuneCountInString(textEntry.Text) < 6 {
-		labelAlertText.SetText("Длинна text должна быть не менее шести символов")
+	if textEntry.Text == "" {
+		labelAlertText.SetText("Text не заполнен")
 		log.Print(labelAlertText.Text)
 		return false
 	}
@@ -69,62 +69,59 @@ func ValidateText(exists bool, textNameEntry *widget.Entry, textEntry *widget.En
 }
 
 func ValidateCart(exists bool, cartNameEntry *widget.Entry, paymentSystemEntry *widget.Entry, numberEntry *widget.Entry,
-	holderEntry *widget.Entry, endDateEntry *widget.Entry, cvcEntry *widget.Entry, labelAlertCart *widget.Label) (bool, time.Time, int) {
-
-	var validEndDate time.Time
-	var validCvc int
+	holderEntry *widget.Entry, endDateEntry *widget.Entry, cvcEntry *widget.Entry, labelAlertCart *widget.Label) bool {
 	var err error
 
 	if exists {
 		labelAlertCart.SetText("Карта с таким name уже существует")
 		log.Print(labelAlertCart)
-		return false, validEndDate, validCvc
+		return false
 	}
-	if utf8.RuneCountInString(cartNameEntry.Text) < 6 {
-		labelAlertCart.SetText("Длинна name должна быть не менее шести символов")
+	if cartNameEntry.Text == "" {
+		labelAlertCart.SetText("Name не заполнен")
 		log.Print(labelAlertCart.Text)
-		return false, validEndDate, validCvc
+		return false
 	}
 	if paymentSystemEntry.Text == "" {
 		labelAlertCart.SetText("Payment System не заполнен")
 		log.Print(labelAlertCart.Text)
-		return false, validEndDate, validCvc
+		return false
 	}
 	if numberEntry.Text == "" {
 		labelAlertCart.SetText("Number не заполнен")
 		log.Print(labelAlertCart.Text)
-		return false, validEndDate, validCvc
+		return false
 	}
 	if holderEntry.Text == "" {
 		labelAlertCart.SetText("Holder не заполнен")
 		log.Print(labelAlertCart.Text)
-		return false, validEndDate, validCvc
+		return false
 	}
 	if endDateEntry.Text == "" {
 		labelAlertCart.SetText("End date не заполнен")
 		log.Print(labelAlertCart.Text)
-		return false, validEndDate, validCvc
+		return false
 	} else {
 		layout := "01/02/2006"
-		validEndDate, err = time.Parse(layout, endDateEntry.Text)
+		_, err = time.Parse(layout, endDateEntry.Text)
 		if err != nil {
 			labelAlertCart.SetText("End Date не корректный (пример: 01/02/2006)")
 			log.Print(labelAlertCart.Text)
-			return false, validEndDate, validCvc
+			return false
 		}
 	}
 	if cvcEntry.Text == "" {
 		labelAlertCart.SetText("CVC не заполнен")
 		log.Print(labelAlertCart.Text)
-		return false, validEndDate, validCvc
+		return false
 	} else {
-		validCvc, err = strconv.Atoi(cvcEntry.Text)
+		_, err = strconv.Atoi(cvcEntry.Text)
 		if err != nil {
 			labelAlertCart.SetText("CVC не корректный (пример: 123)")
 			log.Print(labelAlertCart.Text)
-			return false, validEndDate, validCvc
+			return false
 		}
 	}
 
-	return true, validEndDate, validCvc
+	return true
 }

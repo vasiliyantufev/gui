@@ -7,9 +7,23 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var data = [][]string{
+var slice1 = [][]string{
 	{"top left", "top right"},
-	{"bottom left", "bottom right"}}
+	{"bottom left", "bottom right"},
+	{"left", "right"}}
+
+var slice2 = [][]string{
+	{"bottom left", "bottom right"},
+	{"top left", "top right"}}
+
+var slice3 = [][]string{
+	{"left", "right"},
+	{"top", "bbb"},
+	{"aaa", "kkk"},
+	{"kkk", "aaa"},
+	{"top", "bbb"},
+	{"aaa", "kkk"},
+	{"kkk", "aaa"}}
 
 func setDefaultColumnsWidthCart(table *widget.Table) {
 	colWidths := []float32{150, 150, 150}
@@ -23,15 +37,17 @@ func main() {
 	myWindow := myApp.NewWindow("Table Widget")
 	myWindow.Resize(fyne.NewSize(400, 200))
 
+	slice1 = slice2
+
 	list := widget.NewTable(
 		func() (int, int) {
-			return len(data), len(data[0])
+			return len(slice1), len(slice1[0])
 		},
 		func() fyne.CanvasObject {
 			return widget.NewLabel("wide content")
 		},
 		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(data[i.Row][i.Col])
+			o.(*widget.Label).SetText(slice1[i.Row][i.Col])
 		})
 
 	setDefaultColumnsWidthCart(list)
@@ -42,9 +58,9 @@ func main() {
 
 	buttonTop := widget.NewButton("Обновить данные", func() {
 		index++
-		data = append(data, []string{"top left", "top right"})
 
-		list.Resize(fyne.NewSize(float32(len(data)), float32(len(data[0]))))
+		slice1 = slice3
+
 		list.Refresh()
 		myWindow.SetContent(c)
 	})
